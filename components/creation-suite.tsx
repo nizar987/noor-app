@@ -1,0 +1,244 @@
+'use client';
+
+import { useState } from 'react';
+import { Platform, ContentTheme, Language, Tone, GenerateRequest } from '@/types';
+import PlatformSelector from './platform-selector';
+import ContentPreview from './content-preview';
+import CustomSelect from './custom-select';
+import { useGenerate } from '@/hooks/use-generate';
+
+/* ─── Static data ─────────────────────────────────────────────── */
+
+const THEMES: { value: ContentTheme; label: string }[] = [
+  { value: 'dawah',    label: "Da'wah"             },
+  { value: 'motivasi', label: 'Motivational'        },
+  { value: 'sirah',    label: 'History'             },
+  { value: 'fiqh',     label: 'Fiqh'               },
+  { value: 'tafsir',   label: 'Quranic Reflection'  },
+  { value: 'hadith',   label: 'Hadith'              },
+];
+
+const LANGUAGES: { value: Language; label: string }[] = [
+  { value: 'indonesia', label: 'Indonesia' },
+  { value: 'english',   label: 'English'   },
+  { value: 'arabic',    label: 'Arabic'    },
+];
+
+const TONES: { value: Tone; label: string }[] = [
+  { value: 'inspiring', label: 'Inspiring' },
+  { value: 'academic',  label: 'Academic'  },
+  { value: 'friendly',  label: 'Friendly'  },
+  { value: 'urgent',    label: 'Urgent'    },
+  { value: 'poetic',    label: 'Poetic'    },
+];
+
+/* ─── Component ──────────────────────────────────────────────── */
+
+export default function CreationSuite() {
+  const [platform,               setPlatform]               = useState<Platform>('instagram');
+  const [theme,                  setTheme]                  = useState<ContentTheme>('dawah');
+  const [language,               setLanguage]               = useState<Language>('indonesia');
+  const [tone,                   setTone]                   = useState<Tone>('inspiring');
+  const [topic,                  setTopic]                  = useState('');
+  const [additionalInstructions, setAdditionalInstructions] = useState('');
+  const [isGeneratingTopic, setIsGeneratingTopic] = useState(false);
+
+  const { generate, result, isLoading, error, reset } = useGenerate();
+
+  const buildRequest = (): GenerateRequest => ({
+    platform,
+    theme,
+    language,
+    tone,
+    topic: topic.trim(),
+    additionalInstructions: additionalInstructions.trim() || undefined,
+  });
+
+  const handleGenerate   = () => { if (topic.trim()) generate(buildRequest()); };
+  const handleRegenerate = () => { if (topic.trim()) generate(buildRequest()); };
+
+  const handleSuggestTopic = async () => {
+    setIsGeneratingTopic(true);
+    try {
+      const res = await fetch('/api/suggest-topic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme, platform }),
+      });
+      const data = await res.json();
+      if (data.topic) setTopic(data.topic);
+    } catch (e) {
+      console.error('Failed to generate topic idea');
+    } finally {
+      setIsGeneratingTopic(false);
+    }
+  };
+
+  return (
+    <div className="lg:col-span-8 bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-stack-md flex flex-col gap-stack-md"
+      style={{ boxShadow: '0 4px 20px rgba(6,78,59,0.03)' }}>
+
+      {/* Heading */}
+      <div>
+        <h1 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-2">
+          Creation Suite
+        </h1>
+        <p className="text-on-surface-variant font-body-md text-body-md">
+          Design and generate purposeful Islamic content.
+        </p>
+      </div>
+
+      {/* Platform */}
+      <PlatformSelector value={platform} onChange={setPlatform} />
+
+      {/* Theme & Language */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-sm">
+        <div className="flex flex-col gap-2">
+          <label htmlFor="select-theme" className="font-label-md text-label-md text-on-surface">
+            Content Theme
+          </label>
+          <CustomSelect<ContentTheme>
+            id="select-theme"
+            value={theme}
+            options={THEMES}
+            onChange={setTheme}
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label htmlFor="select-language" className="font-label-md text-label-md text-on-surface">
+            Language
+          </label>
+          <CustomSelect<Language>
+            id="select-language"
+            value={language}
+            options={LANGUAGES}
+            onChange={setLanguage}
+          />
+        </div>
+      </div>
+
+      {/* Tone */}
+      <div className="flex flex-col gap-2">
+        <label className="font-label-md text-label-md text-on-surface">Voice &amp; Tone</label>
+        <div className="flex flex-wrap gap-2">
+          {TONES.map((t) => {
+            const isActive = tone === t.value;
+            return (
+              <button
+                key={t.value}
+                id={`tone-${t.value}`}
+                type="button"
+                onClick={() => setTone(t.value)}
+                className={`px-3 py-1.5 rounded-full font-label-sm text-label-sm cursor-pointer transition-colors border
+                  ${isActive
+                    ? 'bg-[#FEF3C7] border-[#D97706] text-[#92400E]'
+                    : 'bg-surface-container border-outline-variant/50 text-on-surface-variant hover:border-primary/50'
+                  }`}
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Topic */}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <label htmlFor="input-topic" className="font-label-md text-label-md text-on-surface">
+            Specific Topic
+          </label>
+          <button
+            type="button"
+            onClick={handleSuggestTopic}
+            disabled={isGeneratingTopic}
+            className="flex items-center gap-1 font-label-sm text-label-sm text-secondary hover:text-secondary-container transition-colors disabled:opacity-50"
+          >
+            {isGeneratingTopic ? (
+              <span className="w-3 h-3 border-2 border-secondary/30 border-t-secondary rounded-full animate-spin" />
+            ) : (
+              <span className="material-symbols-outlined text-[14px]">lightbulb</span>
+            )}
+            Generate Idea ✨
+          </button>
+        </div>
+        <input
+          id="input-topic"
+          type="text"
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          placeholder="e.g., Keutamaan Sabar dalam menghadapi cobaan..."
+          className="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+        />
+      </div>
+
+      {/* Additional instructions */}
+      <div className="flex flex-col gap-2">
+        <label htmlFor="input-additional" className="font-label-md text-label-md text-on-surface">
+          Additional Instructions{' '}
+          <span className="text-on-surface-variant font-normal">(Optional)</span>
+        </label>
+        <textarea
+          id="input-additional"
+          value={additionalInstructions}
+          onChange={(e) => setAdditionalInstructions(e.target.value)}
+          placeholder="e.g., Include specific verses from Al-Baqarah, keep it under 3 paragraphs..."
+          rows={3}
+          className="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
+        />
+      </div>
+
+      {/* Error */}
+      {error && (
+        <div className="p-4 rounded-lg bg-error-container border border-error/20 animate-fade-in">
+          <p className="text-sm font-semibold text-on-error-container">Failed to generate content</p>
+          <p className="text-xs text-on-error-container/70 mt-1">{error}</p>
+        </div>
+      )}
+
+      {/* Loading shimmer */}
+      {isLoading && (
+        <div className="space-y-3 animate-fade-in">
+          <div className="h-4 rounded shimmer" />
+          <div className="h-4 rounded shimmer w-5/6" />
+          <div className="h-4 rounded shimmer w-4/6" />
+          <div className="h-4 rounded shimmer w-5/6" />
+          <div className="h-4 rounded shimmer w-3/6" />
+        </div>
+      )}
+
+      {/* Result */}
+      {result && !isLoading && (
+        <div className="border-t border-outline-variant/20 pt-stack-md animate-fade-in">
+          <ContentPreview result={result} onRegenerate={handleRegenerate} onReset={reset} />
+        </div>
+      )}
+
+      {/* Generate button */}
+      <div className="mt-4 pt-4 border-t border-outline-variant/20 flex justify-end">
+        <button
+          id="btn-generate"
+          type="button"
+          onClick={handleGenerate}
+          disabled={isLoading || !topic.trim()}
+          className="w-full md:w-auto bg-primary text-on-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-primary-container transition-colors duration-300 shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? (
+            <>
+              <span className="w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" />
+              Generating...
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: '"FILL" 1' }}>
+                auto_awesome
+              </span>
+              Generate Content
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+}
