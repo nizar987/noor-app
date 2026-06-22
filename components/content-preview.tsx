@@ -35,10 +35,29 @@ const THEME_LABELS: Record<string, string> = {
 export default function ContentPreview({ result, onRegenerate, onReset }: ContentPreviewProps) {
   const [copied, setCopied] = useState(false);
 
+  const cleanContent = (text: string) => {
+    return text.replace(/(^|\n)>\s?/g, '$1');
+  };
+
+  const processedContent = cleanContent(result.content);
+
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(result.content);
+    await navigator.clipboard.writeText(processedContent);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const renderFormattedText = (text: string) => {
+    const parts = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={index} className="font-bold">{part.slice(2, -2)}</strong>;
+      }
+      if (part.startsWith('*') && part.endsWith('*')) {
+        return <em key={index} className="italic">{part.slice(1, -1)}</em>;
+      }
+      return <span key={index}>{part}</span>;
+    });
   };
 
   return (
@@ -68,13 +87,12 @@ export default function ContentPreview({ result, onRegenerate, onReset }: Conten
 
       {/* Generated content */}
       <div className="bg-surface-container-low border border-outline-variant/30 rounded-lg p-4 font-body-md text-body-md text-on-surface whitespace-pre-wrap leading-relaxed max-h-80 overflow-y-auto">
-        {result.content}
+        {renderFormattedText(processedContent)}
       </div>
 
       {/* Topic & model info */}
       <p className="text-[12px] text-outline">
         Topic: <span className="text-on-surface-variant">{result.topic}</span>
-        {' · '}Model: <span className="text-on-surface-variant">{result.comboUsed}</span>
       </p>
 
       {/* Actions */}

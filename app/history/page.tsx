@@ -9,35 +9,35 @@ import { HistoryEntry, Platform, ContentTheme } from '@/types';
 import { getHistory, deleteFromHistory, clearHistory } from '@/lib/history';
 
 const PLATFORM_OPTIONS = ['all', 'instagram', 'tiktok', 'facebook', 'twitter'] as const;
-const THEME_OPTIONS    = ['all', 'dawah', 'tafsir', 'hadith', 'fiqh', 'sirah', 'motivasi'] as const;
+const THEME_OPTIONS = ['all', 'dawah', 'tafsir', 'hadith', 'fiqh', 'sirah', 'motivasi'] as const;
 
 const PLATFORM_ICONS: Record<string, string> = {
   instagram: 'camera_alt',
-  tiktok:    'video_library',
-  facebook:  'thumb_up',
-  twitter:   'chat',
+  tiktok: 'video_library',
+  facebook: 'thumb_up',
+  twitter: 'chat',
 };
 
 const PLATFORM_LABELS: Record<string, string> = {
   instagram: 'Instagram',
-  tiktok:    'TikTok',
-  facebook:  'Facebook',
-  twitter:   'Twitter',
+  tiktok: 'TikTok',
+  facebook: 'Facebook',
+  twitter: 'Twitter',
 };
 
 const THEME_LABELS: Record<string, string> = {
-  dawah:    "Da'wah",
-  tafsir:   'Quranic Reflection',
-  hadith:   'Hadith',
-  fiqh:     'Fiqh',
-  sirah:    'History',
+  dawah: "Da'wah",
+  tafsir: 'Quranic Reflection',
+  hadith: 'Hadith',
+  fiqh: 'Fiqh',
+  sirah: 'History',
   motivasi: 'Motivational',
 };
 
 function timeAgo(isoDate: string): string {
-  const diff  = Date.now() - new Date(isoDate).getTime();
+  const diff = Date.now() - new Date(isoDate).getTime();
   const hours = Math.floor(diff / 3_600_000);
-  if (hours < 1)  return 'Just now';
+  if (hours < 1) return 'Just now';
   if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
   const days = Math.floor(hours / 24);
   if (days === 1) return 'Yesterday';
@@ -45,11 +45,11 @@ function timeAgo(isoDate: string): string {
 }
 
 export default function HistoryPage() {
-  const [allHistory,     setAllHistory]     = useState<HistoryEntry[]>([]);
-  const [selectedEntry,  setSelectedEntry]  = useState<HistoryEntry | null>(null);
+  const [allHistory, setAllHistory] = useState<HistoryEntry[]>([]);
+  const [selectedEntry, setSelectedEntry] = useState<HistoryEntry | null>(null);
   const [filterPlatform, setFilterPlatform] = useState<'all' | Platform>('all');
-  const [filterTheme,    setFilterTheme]    = useState<'all' | ContentTheme>('all');
-  const [searchQuery,    setSearchQuery]    = useState('');
+  const [filterTheme, setFilterTheme] = useState<'all' | ContentTheme>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const loadHistory = () => setAllHistory(getHistory());
 
@@ -57,7 +57,7 @@ export default function HistoryPage() {
 
   const filtered = allHistory.filter((e) => {
     if (filterPlatform !== 'all' && e.platform !== filterPlatform) return false;
-    if (filterTheme    !== 'all' && e.theme    !== filterTheme)    return false;
+    if (filterTheme !== 'all' && e.theme !== filterTheme) return false;
     if (searchQuery && !e.topic.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
@@ -252,7 +252,7 @@ export default function HistoryPage() {
       <footer className="w-full mt-auto bg-surface-container-lowest border-t border-outline-variant/20">
         <div className="flex flex-col md:flex-row justify-between items-center py-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
           <span className="font-display-lg text-label-md text-primary mb-2 md:mb-0">Noor AI</span>
-          <p className="text-on-surface-variant font-label-sm text-label-sm">© 2024 Noor AI. Crafted for Sacred Creation.</p>
+          <p className="text-on-surface-variant font-label-sm text-label-sm">© 2026 Noor AI. Crafted for Sacred Creation.</p>
         </div>
       </footer>
     </div>

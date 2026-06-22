@@ -88,7 +88,7 @@ export default function DashboardPage() {
           <div className="mb-4 md:mb-0">
             <span className="font-display-lg text-label-md text-primary">Noor AI</span>
             <p className="text-on-surface-variant font-label-sm text-label-sm mt-1">
-              © 2024 Noor AI. Crafted for Sacred Creation.
+              © 2026 Noor AI. Crafted for Sacred Creation.
             </p>
           </div>
           <nav className="flex flex-wrap justify-center gap-6">

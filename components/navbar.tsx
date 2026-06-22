@@ -35,7 +35,7 @@ export default function Navbar() {
           <nav className="hidden md:flex gap-6 relative">
             {NAV_LINKS.map((link) => {
               const isActive = pathname.startsWith(link.href);
-              const isPlaceholder = link.href === '/preview' || link.href === '/settings';
+              const isPlaceholder = link.href === '/settings';
               
               if (isPlaceholder) {
                 return (

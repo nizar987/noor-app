@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { GenerateRequest, GenerateResult } from '@/types';
+import { GenerateRequest, GenerateResult, HistoryEntry } from '@/types';
 import { saveToHistory } from '@/lib/history';
 
 interface UseGenerateReturn {
-  generate: (request: GenerateRequest) => Promise<void>;
+  generate: (request: GenerateRequest) => Promise<HistoryEntry | undefined>;
   result: GenerateResult | null;
   isLoading: boolean;
   error: string | null;
@@ -17,7 +17,7 @@ export function useGenerate(): UseGenerateReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const generate = useCallback(async (request: GenerateRequest) => {
+  const generate = useCallback(async (request: GenerateRequest): Promise<HistoryEntry | undefined> => {
     setIsLoading(true);
     setError(null);
     setResult(null);
@@ -54,7 +54,7 @@ export function useGenerate(): UseGenerateReturn {
       };
 
       setResult(generateResult);
-      saveToHistory(generateResult);
+      return saveToHistory(generateResult);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Terjadi kesalahan tidak diketahui');
     } finally {

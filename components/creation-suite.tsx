@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Platform, ContentTheme, Language, Tone, GenerateRequest } from '@/types';
 import PlatformSelector from './platform-selector';
 import ContentPreview from './content-preview';
@@ -44,7 +45,8 @@ export default function CreationSuite() {
   const [additionalInstructions, setAdditionalInstructions] = useState('');
   const [isGeneratingTopic, setIsGeneratingTopic] = useState(false);
 
-  const { generate, result, isLoading, error, reset } = useGenerate();
+  const router = useRouter();
+  const { generate, isLoading, error, reset } = useGenerate();
 
   const buildRequest = (): GenerateRequest => ({
     platform,
@@ -55,8 +57,22 @@ export default function CreationSuite() {
     additionalInstructions: additionalInstructions.trim() || undefined,
   });
 
-  const handleGenerate   = () => { if (topic.trim()) generate(buildRequest()); };
-  const handleRegenerate = () => { if (topic.trim()) generate(buildRequest()); };
+  const handleGenerate = async () => { 
+    if (topic.trim()) {
+      const entry = await generate(buildRequest());
+      if (entry) {
+        router.push(`/preview?id=${entry.id}`);
+      }
+    } 
+  };
+  const handleRegenerate = async () => { 
+    if (topic.trim()) {
+      const entry = await generate(buildRequest());
+      if (entry) {
+        router.push(`/preview?id=${entry.id}`);
+      }
+    }
+  };
 
   const handleSuggestTopic = async () => {
     setIsGeneratingTopic(true);
@@ -209,12 +225,7 @@ export default function CreationSuite() {
         </div>
       )}
 
-      {/* Result */}
-      {result && !isLoading && (
-        <div className="border-t border-outline-variant/20 pt-stack-md animate-fade-in">
-          <ContentPreview result={result} onRegenerate={handleRegenerate} onReset={reset} />
-        </div>
-      )}
+      {/* Removed inline result preview */}
 
       {/* Generate button */}
       <div className="mt-4 pt-4 border-t border-outline-variant/20 flex justify-end">

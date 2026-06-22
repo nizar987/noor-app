@@ -75,8 +75,8 @@ export default function DonationPage() {
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-secondary"></div>
               <h2 className="font-headline-md text-headline-md text-primary mb-2 mt-4">Sedekah Jariyah</h2>
               <p className="font-body-md text-body-md text-on-surface-variant italic mb-stack-md">&quot;Ilmu yang bermanfaat adalah salah satu pahala yang tidak terputus.&quot;</p>
-              
-              <div 
+
+              <div
                 className="w-full max-w-[240px] aspect-square bg-surface-container-low rounded-xl p-4 mb-stack-sm border border-surface-variant cursor-pointer hover:shadow-[0_4px_20px_rgba(6,78,59,0.1)] transition-shadow group relative"
                 onClick={() => setIsModalOpen(true)}
                 title="Klik untuk memperbesar gambar"
@@ -84,15 +84,15 @@ export default function DonationPage() {
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/5 rounded-xl transition-opacity">
                   <span className="material-symbols-outlined text-primary bg-surface/80 p-2 rounded-full shadow-sm backdrop-blur-sm">zoom_in</span>
                 </div>
-                <img 
-                  alt="QR Code for Donation" 
-                  className="w-full h-full object-contain mix-blend-multiply group-hover:scale-[1.02] transition-transform" 
+                <img
+                  alt="QR Code for Donation"
+                  className="w-full h-full object-contain mix-blend-multiply group-hover:scale-[1.02] transition-transform"
                   src="/asset/img/donation-qr.jpeg"
                 />
               </div>
-              
+
               <p className="font-body-md text-body-md text-on-surface-variant mb-stack-md">Scan QR Code di bawah untuk berdonasi melalui e-wallet (GoPay, OVO, Dana) atau Mobile Banking.</p>
-              
+
               <div className="w-full pt-stack-sm border-t border-outline-variant/30 flex flex-wrap justify-center gap-4 opacity-70 mt-auto">
                 <span className="font-label-md text-label-md text-on-surface-variant flex items-center gap-1">
                   <span className="material-symbols-outlined text-[16px]">account_balance_wallet</span> GoPay
@@ -117,7 +117,7 @@ export default function DonationPage() {
         <div className="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto gap-base">
           <div className="font-headline-md text-headline-md text-primary dark:text-primary-fixed">Noor AI</div>
           <div className="font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container opacity-80 hover:opacity-100 transition-opacity">
-            © 2024 Noor AI. Ancient Wisdom, Modern Tech.
+            © 2026 Noor AI. Crafted for Sacred Creation.
           </div>
           <div className="flex gap-gutter font-label-md text-label-md">
             <a className="text-on-surface-variant dark:text-on-tertiary-container hover:text-secondary dark:hover:text-secondary-fixed transition-colors" href="#">Terms</a>
@@ -138,9 +138,9 @@ export default function DonationPage() {
               <span className="material-symbols-outlined">close</span>
             </button>
             <div className="w-full aspect-square bg-white rounded-xl overflow-hidden relative p-4 flex items-center justify-center">
-              <img 
-                src="/asset/img/donation-qr.jpeg" 
-                alt="Donation QR Code Full" 
+              <img
+                src="/asset/img/donation-qr.jpeg"
+                alt="Donation QR Code Full"
                 className="w-full h-full object-contain"
               />
             </div>
