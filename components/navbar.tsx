@@ -85,14 +85,14 @@ export default function Navbar() {
             </button>
           </div>
 
-          <button
+          <Link
             id="btn-donate"
-            onClick={handlePlaceholder}
+            href="/donation"
             className="hidden md:flex items-center gap-2 border border-primary text-primary px-4 py-2 rounded-full font-label-md text-label-md hover:bg-primary/5 transition-colors duration-200"
           >
             <span className="material-symbols-outlined text-[18px]">volunteer_activism</span>
             Donasi
-          </button>
+          </Link>
 
           <Link
             id="btn-new-creation"

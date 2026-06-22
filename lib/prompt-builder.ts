@@ -30,11 +30,12 @@ function getPlatformFormat(platform: Platform): string {
 // ===== System Prompt Builder =====
 export function buildSystemPrompt(platform: Platform, language: Language): string {
   const platformFormat = getPlatformFormat(platform);
-  
+
   const langInstructions: Record<Language, string> = {
     indonesia: 'Gunakan Bahasa Indonesia yang baik, mengalir, dan mudah dipahami masyarakat umum.',
     english: 'Use clear, eloquent English appropriate for a global Muslim audience.',
     arabic: 'استخدم اللغة العربية الفصحى مع مراعاة سهولة الفهم.',
+    indonesia_sunda: 'Gunakan Bahasa Indonesia dengan bumbu sunda yang baik, mengalir, dan mudah dipahami masyarakat umum atau orang sunda.',
   };
 
   return `Kamu adalah asisten spesialis pembuatan konten dakwah Islam untuk platform ${platform}.
@@ -50,6 +51,13 @@ PANDUAN KONTEN ISLAM:
 - Konten harus akurat secara syar'i dan tidak menyesatkan
 - Gunakan tone yang sesuai dengan permintaan user
 - Konten harus memberi manfaat dan menginspirasi pembaca
+- Mahzab yang digunakan adalah Mahzab Ahlussunnah Waljama'ah
+- WAJIB menyertakan teks tulisan Arab asli untuk setiap kutipan ayat Al-Quran atau Hadits, lengkap dengan terjemahannya, nama Surah dan nomor ayat (atau perawi untuk Hadits).
+- jika tidak tahu sesuatu, katakan 'tidak tahu' atau 'saya tidak tahu' jangan berbohong
+- Jangan memakai kata yang tidak sesuai dengan syariat dan jangan memakai kata kata yang menyinggung mahzab atau golongan lain
+- Jangan menambahkan kata kata yang tidak perlu atau tidak sesuai dengan topik
+- gunakan reference yang terpercaya, seperti website nu.or.id, https://ilmiyyah.com/halaqah-silsilah-ilmiyah
+
 
 PENTING: Jika ada ketidakpastian tentang referensi hadits, lebih baik tidak menyebutkannya daripada menyebut hadits palsu.`;
 }

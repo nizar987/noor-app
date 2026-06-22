@@ -11,7 +11,7 @@ export type ContentTheme =
   | 'motivasi';
 
 // ===== Language Types =====
-export type Language = 'indonesia' | 'english' | 'arabic';
+export type Language = 'indonesia' | 'english' | 'arabic' | 'indonesia_sunda';
 
 // ===== Tone Types =====
 export type Tone = 'inspiring' | 'academic' | 'friendly' | 'urgent' | 'poetic';

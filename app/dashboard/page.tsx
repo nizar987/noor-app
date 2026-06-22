@@ -57,6 +57,28 @@ export default function DashboardPage() {
               credible content.
             </p>
           </div>
+
+          {/* Promotion Card */}
+          <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 rounded-xl border border-indigo-100 dark:border-indigo-900/50 p-stack-md flex flex-col items-center text-center">
+            <span
+              className="material-symbols-outlined text-indigo-500 mb-2"
+              style={{ fontVariationSettings: '"FILL" 1' }}
+            >
+              campaign
+            </span>
+            <h4 className="font-label-md text-label-md text-indigo-900 dark:text-indigo-200 mb-1">Special Offer</h4>
+            <p className="font-body-md text-[14px] text-indigo-800/80 dark:text-indigo-300/80 mb-4">
+              Get an exclusive <strong>20% discount</strong> on Hostinger web hosting when you sign up using our referral link.
+            </p>
+            <a
+              href="https://www.hostinger.com/id?REFERRALCODE=AGPNIZARAMRT"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-label-md text-label-md py-2 px-6 rounded-full transition-colors w-full sm:w-auto"
+            >
+              Claim 20% Discount
+            </a>
+          </div>
         </aside>
       </main>
 

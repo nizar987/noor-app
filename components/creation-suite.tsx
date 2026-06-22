@@ -19,9 +19,10 @@ const THEMES: { value: ContentTheme; label: string }[] = [
 ];
 
 const LANGUAGES: { value: Language; label: string }[] = [
-  { value: 'indonesia', label: 'Indonesia' },
-  { value: 'english',   label: 'English'   },
-  { value: 'arabic',    label: 'Arabic'    },
+  { value: 'indonesia',       label: 'Indonesia' },
+  { value: 'indonesia_sunda', label: 'Indonesia (Sunda)' },
+  { value: 'english',         label: 'English'   },
+  { value: 'arabic',          label: 'Arabic'    },
 ];
 
 const TONES: { value: Tone; label: string }[] = [
