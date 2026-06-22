@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'ag/gemini-3.5-flash-low',
+        model: 'dakwah-tier',
         messages: [
           {
             role: 'system',
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
           {
             role: 'user',
             content: `Berikan SATU ide topik spesifik yang menarik untuk tema ${theme}. 
-Jangan gunakan format nomor, bullet, atau penjelasan tambahan. Cukup berikan langsung kalimat topiknya dalam 1 kalimat singkat.`,
+Jangan gunakan format nomor, bullet, atau penjelasan tambahan. Cukup berikan langsung kalimat topiknya dalam 1 kalimat singkat. Jangan gunakan suggest yg sama`,
           },
         ],
         max_tokens: 15000,
