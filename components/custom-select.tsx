@@ -13,6 +13,7 @@ interface CustomSelectProps<T extends string> {
   onChange: (value: T) => void;
   label?: string;
   id?: string;
+  disabled?: boolean;
 }
 
 export default function CustomSelect<T extends string>({
@@ -20,6 +21,7 @@ export default function CustomSelect<T extends string>({
   options,
   onChange,
   id,
+  disabled,
 }: CustomSelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,9 +43,11 @@ export default function CustomSelect<T extends string>({
       <button
         id={id}
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        disabled={disabled}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
         className={`w-full flex items-center justify-between bg-surface-container-low border rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface transition-all outline-none
-          ${isOpen ? 'border-primary ring-1 ring-primary' : 'border-outline-variant/50'}`}
+          ${isOpen ? 'border-primary ring-1 ring-primary' : 'border-outline-variant/50'}
+          ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <span className="truncate">{selectedOption?.label}</span>
         <span

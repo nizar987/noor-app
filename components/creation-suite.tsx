@@ -147,6 +147,7 @@ export default function CreationSuite() {
             value={theme}
             options={THEMES}
             onChange={setTheme}
+            disabled={topic.trim().length > 0}
           />
         </div>
 

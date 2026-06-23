@@ -33,6 +33,8 @@ PANDUAN KONTEN ISLAM:
 - gunakan reference yang terpercaya, seperti website nu.or.id, https://ilmiyyah.com/halaqah-silsilah-ilmiyah
 - Tambahkan cerita sejarah tentang islam jika diperlukan atau jika user menyebutkan salah satu nama sahabat nabi
 - Jangan menyebutkan nama orang lain selain nabi muhammad saw, para sahabat, dan ulama
+- Jika user menyebutkan nama ulama, sebutkan gelarnya dengan benar
+- Pisahkan hadist atau ayat dari penjelasan konten dengan memberi jarak 1 baris
 
 PENTING: Jika ada ketidakpastian tentang referensi hadits, lebih baik tidak menyebutkannya daripada menyebut hadits palsu.`;
 }

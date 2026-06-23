@@ -22,7 +22,6 @@ interface ContentOptions {
 }
 
 function buildSystemPrompt(options: ContentOptions): string {
-  console.log("Options: ", options)
   const sections = [
     `You are a content creation assistant.`,
     `## Output Requirements`,
@@ -40,8 +39,8 @@ function buildSystemPrompt(options: ContentOptions): string {
     options.topic.trim(),
     `## Islamic References`,
     `Where relevant, enrich the content with:`,
-    `- Quranic verses (include surah name, verse number, and translation)`,
-    `- Hadith (include narrator, source book, and grade if known)`,
+    `- Quranic verses (include surah name, verse arabic text, verse number, and translation)`,
+    `- Hadith (include narrator, hadith arabic text, source book, and grade if known)`,
     `Only include references that are directly relevant to the topic. Do not fabricate or paraphrase references — use authentic, verified text only.`,
     options.additionalInstructions?.trim()
       ? `## Additional Instructions\n${options.additionalInstructions.trim()}`
@@ -53,11 +52,8 @@ function buildSystemPrompt(options: ContentOptions): string {
 
 export async function callRouter9(options: RouterCallOptions): Promise<RouterResponse> {
   const baseUrl = process.env.NOOR_9ROUTER_BASE_URL;
-  console.log("baseUrl", baseUrl);
   const apiKey = process.env.NOOR_9ROUTER_API_KEY;
-  console.log("apiKey", apiKey);
   const comboName = process.env.NOOR_9ROUTER_COMBO_NAME;
-  console.log("comboName", comboName);
 
   if (!baseUrl || !apiKey || !comboName) {
     throw new Error('9router configuration missing. Please check your .env.local file.');
