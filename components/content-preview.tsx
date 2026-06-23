@@ -72,14 +72,14 @@ export default function ContentPreview({ result, onRegenerate, onReset }: Conten
 
       {/* Generated content */}
       <div className="bg-surface-container-low border border-outline-variant/30 rounded-lg p-4 font-body-md text-body-md text-on-surface whitespace-pre-wrap leading-relaxed max-h-80 overflow-y-auto">
+        <h3 className="font-headline-md text-[18px] text-primary mb-3 pb-3 border-b border-outline-variant/30 leading-snug">
+          "{result.topic}"
+        </h3>
         {renderFormattedText(processedContent)}
       </div>
 
-      {/* Topic & Instructions info */}
+      {/* Instructions info */}
       <div className="flex flex-col gap-1">
-        <p className="text-[12px] text-outline">
-          Topic: <span className="text-on-surface-variant">{result.topic}</span>
-        </p>
         {result.additionalInstructions && (
           <p className="text-[12px] text-outline">
             Instructions: <span className="text-on-surface-variant">{result.additionalInstructions}</span>

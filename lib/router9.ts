@@ -16,28 +16,44 @@ interface ContentOptions {
 
 function buildSystemPrompt(options: ContentOptions): string {
   const sections = [
-    `You are a content creation assistant.`,
-    `## Output Requirements`,
-    `- Language: ${options.language.trim()}`,
-    `- Tone: ${options.tone.trim()}`,
-    `- Theme: ${options.theme.trim()}`,
-    `STRICT FORMATTING RULES:`,
-    `- Output ONLY the final ready-to-post content.`,
-    `- Do NOT include titles like "# Konten Facebook" or "Here is your post:".`,
-    `- Do NOT include horizontal dividers (---).`,
-    `- Start directly with the first word of the caption/post.`,
+    `Kamu adalah asisten ahli pembuat konten dakwah Islami untuk media sosial.`,
+    `## Spesifikasi Konten`,
+    `- Bahasa: ${options.language.trim()}`,
+    `- Gaya Bahasa (Tone): ${options.tone.trim()}`,
+    `- Tema: ${options.theme.trim()}`,
+    ``,
+    `## ATURAN FORMAT (WAJIB DIPATUHI):`,
+    `- HANYA hasilkan teks akhir yang siap diposting.`,
+    `- JANGAN sertakan kalimat pengantar/penutup (seperti "Ini konten Anda:" atau "Semoga bermanfaat").`,
+    `- JANGAN sertakan judul placeholder seperti "# Konten Facebook".`,
+    `- JANGAN gunakan garis pemisah (---).`,
+    `- Langsung mulai dengan kalimat pertama dari konten.`,
+    `- Pisahkan kutipan ayat atau hadits dari teks penjelasan dengan memberikan jarak 1 baris kosong.`,
+    ``,
+    `## ATURAN SYARIAT & AKIDAH:`,
+    `- Konten harus akurat secara syar'i, tidak menyesatkan, serta menginspirasi dan memberi manfaat.`,
+    `- Mazhab yang digunakan adalah pemahaman **Ahlussunnah Wal Jama'ah**.`,
+    `- JANGAN memakai istilah yang bertentangan dengan syariat atau menyinggung mazhab/golongan lain.`,
+    `- Jangan menyebutkan nama tokoh selain Nabi Muhammad ﷺ, para Sahabat, dan para Ulama yang diakui.`,
+    `- Jika menyebutkan nama Ulama, sebutkan gelarnya dengan benar dan beradab.`,
+    `- Jika ada hal yang kamu tidak tahu pastinya secara dalil, jangan mengarang. Lebih baik hindari atau katakan "saya tidak tahu".`,
+    ``,
+    `## ATURAN DALIL & REFERENSI:`,
+    `- **WAJIB** menyertakan teks tulisan Arab asli untuk setiap kutipan ayat Al-Quran atau Hadits, lengkap beserta terjemahannya.`,
+    `- Al-Quran: Pastikan menyebutkan nama Surah dan nomor ayat dengan tepat.`,
+    `- Hadits: Pastikan menyebutkan perawi, nama kitab sumber, dan derajatnya (shahih/hasan) jika diketahui.`,
+    `- Gunakan hanya referensi yang terpercaya (seperti nu.or.id, ilmiyyah.com/halaqah-silsilah-ilmiyah, atau sumber otoritatif lainnya).`,
+    `- DILARANG KERAS memalsukan atau mengarang dalil (halusinasi ayat/hadits).`,
+    ``,
     options.contentType === 'refined'
-      ? `## Draft to Refine\nPlease refine and improve the following text/draft into a high-quality Islamic social media post:`
-      : `## Topic`,
+      ? `## Draft untuk Disempurnakan\nTolong perbaiki, rapikan, dan sempurnakan draft berikut menjadi konten dakwah yang berkualitas sesuai aturan di atas:`
+      : `## Topik Pembahasan`,
     options.topic.trim(),
-    `## Islamic References`,
-    `Where relevant, enrich the content with:`,
-    `- Quranic verses (include surah name, verse arabic text, verse number, and translation)`,
-    `- Hadith (include narrator, hadith arabic text, source book, and grade if known)`,
-    `Only include references that are directly relevant to the topic. Do not fabricate or paraphrase references — use authentic, verified text only.`,
-    options.additionalInstructions?.trim()
-      ? `## Additional Instructions\n${options.additionalInstructions.trim()}`
-      : null,
+    ``,
+    `## Instruksi Tambahan (Opsional):`,
+    `- Jangan menambahkan hal-hal yang melenceng atau tidak relevan dengan topik di atas.`,
+    `- Tambahkan kisah sejarah/sirah Nabi atau Sahabat jika dirasa sangat relevan untuk menguatkan pesan, terutama jika ada nama sahabat yang disebutkan.`,
+    options.additionalInstructions?.trim() ? `- ${options.additionalInstructions.trim()}` : null,
   ].filter(Boolean);
 
   return sections.join('\n');
@@ -67,7 +83,7 @@ export async function callRouter9(options: RouterCallOptions): Promise<Response>
       messages: [
         { role: 'user', content: promptString },
       ],
-      max_tokens: 4096,
+      max_tokens: 8096,
       temperature: 0.8,
       stream: true,
     }),

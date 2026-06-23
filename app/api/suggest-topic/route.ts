@@ -6,6 +6,7 @@ export async function POST(req: NextRequest) {
 
     const baseUrl = process.env.NOOR_9ROUTER_BASE_URL;
     const apiKey = process.env.NOOR_9ROUTER_API_KEY;
+    const comboName = process.env.NOOR_9ROUTER_COMBO_NAME;
 
     if (!baseUrl || !apiKey) {
       throw new Error('9router configuration missing.');
@@ -19,7 +20,7 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'genfity/claude-sonnet-4.6',
+        model: comboName,
         system: 'Kamu adalah asisten pembuat ide konten Islami.',
         messages: [
           {
