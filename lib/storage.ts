@@ -1,7 +1,31 @@
-import { GenerateResult } from '@/types';
+import { GenerateResult, GenerateRequest } from '@/types';
 import { getUserId } from './user-id';
 
 const PREVIEW_STORAGE_KEY = 'noor_current_preview';
+const PENDING_GEN_KEY = 'noor_pending_generation';
+
+// ===== Pending Generation Storage =====
+export function savePendingGeneration(request: GenerateRequest): void {
+  if (typeof window === 'undefined') return;
+  sessionStorage.setItem(PENDING_GEN_KEY, JSON.stringify(request));
+}
+
+export function getPendingGeneration(): GenerateRequest | null {
+  if (typeof window === 'undefined') return null;
+  const data = sessionStorage.getItem(PENDING_GEN_KEY);
+  if (!data) return null;
+  try {
+    return JSON.parse(data) as GenerateRequest;
+  } catch (err) {
+    console.error('Failed to parse pending generation:', err);
+    return null;
+  }
+}
+
+export function clearPendingGeneration(): void {
+  if (typeof window === 'undefined') return;
+  sessionStorage.removeItem(PENDING_GEN_KEY);
+}
 
 // ===== Preview Storage (Local only) =====
 export function saveCurrentPreview(result: GenerateResult): void {

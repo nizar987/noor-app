@@ -16,12 +16,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Call 9router directly with the user's payload
-    const result = await callRouter9(body);
+    const resultResponse = await callRouter9(body);
 
-    return NextResponse.json({
-      content: result.content,
-      model: result.model,
-      usage: result.usage,
+    return new Response(resultResponse.body, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error';

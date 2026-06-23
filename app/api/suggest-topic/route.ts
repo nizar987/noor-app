@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
         ],
         max_tokens: 1024,
         temperature: 0.9,
-        stream: false,
+        stream: true,
       }),
     });
 
@@ -38,17 +38,13 @@ export async function POST(req: NextRequest) {
       throw new Error(`9router Error: ${errText}`);
     }
 
-    const responseText = await response.text();
-    let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch (e) {
-      throw new Error(`9router returned invalid JSON (Stream/Text). First 100 chars: ${responseText.substring(0, 100)}`);
-    }
-
-    const topic = data.content?.[0]?.text?.trim() || data.choices?.[0]?.message?.content?.trim() || '';
-
-    return NextResponse.json({ topic });
+    return new Response(response.body, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error';
     return NextResponse.json({ error: message }, { status: 500 });

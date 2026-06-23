@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import { ContentTheme, Language, Tone, GenerateRequest, ContentType } from '@/types';
 import ContentPreview from './content-preview';
 import CustomSelect from './custom-select';
-import { useGenerate } from '@/hooks/use-generate';
+import { consumeStream } from '@/lib/client-stream';
+import { savePendingGeneration, clearCurrentPreview } from '@/lib/storage';
 
 /* ─── Static data ─────────────────────────────────────────────── */
 
@@ -51,7 +52,6 @@ export default function CreationSuite() {
   const [isGeneratingTopic, setIsGeneratingTopic] = useState(false);
 
   const router = useRouter();
-  const { generate, isLoading, error, reset } = useGenerate();
 
   const buildRequest = (): GenerateRequest => ({
     contentType,
@@ -62,33 +62,36 @@ export default function CreationSuite() {
     additionalInstructions: additionalInstructions.trim() || undefined,
   });
 
-  const handleGenerate = async () => { 
+  const handleGenerate = () => { 
     if (topic.trim()) {
-      const success = await generate(buildRequest());
-      if (success) {
-        router.push(`/preview`);
-      }
+      clearCurrentPreview(); // Ensure old preview is cleared
+      savePendingGeneration(buildRequest());
+      router.push(`/preview?t=${Date.now()}`);
     } 
   };
-  const handleRegenerate = async () => { 
+  const handleRegenerate = () => { 
     if (topic.trim()) {
-      const success = await generate(buildRequest());
-      if (success) {
-        router.push(`/preview`);
-      }
+      clearCurrentPreview();
+      savePendingGeneration(buildRequest());
+      router.push(`/preview?t=${Date.now()}`);
     }
   };
 
   const handleSuggestTopic = async () => {
     setIsGeneratingTopic(true);
+    setTopic(''); // Clear existing topic before streaming
     try {
       const res = await fetch('/api/suggest-topic', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ theme, language, tone }),
       });
-      const data = await res.json();
-      if (data.topic) setTopic(data.topic);
+      
+      if (!res.ok) throw new Error('Failed to fetch stream');
+
+      await consumeStream(res, (text) => {
+        setTopic(text);
+      });
     } catch (e) {
       console.error('Failed to generate topic idea');
     } finally {
@@ -248,24 +251,9 @@ export default function CreationSuite() {
         />
       </div>
 
-      {/* Error */}
-      {error && (
-        <div className="p-4 rounded-lg bg-error-container border border-error/20 animate-fade-in">
-          <p className="text-sm font-semibold text-on-error-container">Failed to generate content</p>
-          <p className="text-xs text-on-error-container/70 mt-1">{error}</p>
-        </div>
-      )}
 
-      {/* Loading shimmer */}
-      {isLoading && (
-        <div className="space-y-3 animate-fade-in">
-          <div className="h-4 rounded shimmer" />
-          <div className="h-4 rounded shimmer w-5/6" />
-          <div className="h-4 rounded shimmer w-4/6" />
-          <div className="h-4 rounded shimmer w-5/6" />
-          <div className="h-4 rounded shimmer w-3/6" />
-        </div>
-      )}
+
+
 
       {/* Removed inline result preview */}
 
@@ -275,22 +263,15 @@ export default function CreationSuite() {
           id="btn-generate"
           type="button"
           onClick={handleGenerate}
-          disabled={isLoading || !topic.trim()}
+          disabled={isGeneratingTopic || !topic.trim()}
           className="w-full md:w-auto bg-primary text-on-primary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-primary-container transition-colors duration-300 shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? (
-            <>
-              <span className="w-4 h-4 border-2 border-on-primary/30 border-t-on-primary rounded-full animate-spin" />
-              Generating...
-            </>
-          ) : (
-            <>
-              <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: '"FILL" 1' }}>
-                auto_awesome
-              </span>
-              Generate Content
-            </>
-          )}
+          <>
+            <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: '"FILL" 1' }}>
+              auto_awesome
+            </span>
+            Generate Content
+          </>
         </button>
       </div>
     </div>

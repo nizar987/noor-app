@@ -1,26 +1,79 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/navbar';
 import ContentPreview from '@/components/content-preview';
-import { getCurrentPreview } from '@/lib/storage';
+import { getCurrentPreview, saveCurrentPreview, getPendingGeneration, clearPendingGeneration, pingUserActive } from '@/lib/storage';
+import { consumeStream } from '@/lib/client-stream';
 import { GenerateResult } from '@/types';
 import Link from 'next/link';
 
 function PreviewContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [entry, setEntry] = useState<GenerateResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Only runs on the client
+    // Check if there's a pending generation request to stream
+    // The searchParams.get('t') dependency ensures this runs again if navigating to /preview?t=...
+    const t = searchParams.get('t');
+    const pendingRequest = getPendingGeneration();
+    if (pendingRequest) {
+      clearPendingGeneration();
+      
+      const initialEntry: GenerateResult = {
+        content: '',
+        theme: pendingRequest.theme,
+        language: pendingRequest.language,
+        tone: pendingRequest.tone,
+        topic: pendingRequest.topic,
+        additionalInstructions: pendingRequest.additionalInstructions,
+        comboUsed: 'Generating...',
+        createdAt: new Date().toISOString(),
+      };
+      
+      setEntry(initialEntry);
+      setIsLoading(false);
+
+      fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pendingRequest),
+      })
+        .then(async (res) => {
+          if (!res.ok) throw new Error('Failed to fetch stream');
+          
+          let finalContent = '';
+          await consumeStream(res, (text) => {
+            finalContent = text;
+            setEntry((prev) => prev ? { ...prev, content: text } : null);
+          });
+          
+          setEntry((current) => {
+            if (current) {
+              const finalResult = { ...current, content: finalContent, comboUsed: 'AI Generated' };
+              saveCurrentPreview(finalResult);
+              return finalResult;
+            }
+            return current;
+          });
+          pingUserActive();
+        })
+        .catch((err) => {
+          console.error('Error streaming generation:', err);
+        });
+        
+      return;
+    }
+
     const preview = getCurrentPreview();
     if (preview) {
       setEntry(preview);
     }
     setIsLoading(false);
-  }, []);
+  }, [searchParams]);
 
   return (
     <div className="flex-grow max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col gap-stack-md">
