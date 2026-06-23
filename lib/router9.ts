@@ -1,6 +1,6 @@
 import { GenerateRequest } from '@/types';
 
-interface RouterCallOptions extends GenerateRequest {}
+interface RouterCallOptions extends GenerateRequest { }
 
 interface RouterResponse {
   content: string;
@@ -63,25 +63,26 @@ export async function callRouter9(options: RouterCallOptions): Promise<RouterRes
     throw new Error('9router configuration missing. Please check your .env.local file.');
   }
 
-    // Use the buildSystemPrompt function to generate the command
-    const promptString = buildSystemPrompt(options);
+  // Use the buildSystemPrompt function to generate the command
+  const promptString = buildSystemPrompt(options);
 
-    const response = await fetch(`${baseUrl}/v1/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: comboName,
-        messages: [
-          { role: 'user', content: promptString },
-        ],
-        max_tokens: 35000,
-        temperature: 0.8,
-        stream: false,
-      }),
-    });
+  const apiUrl = baseUrl.endsWith('/v1') ? `${baseUrl}/messages` : `${baseUrl}/v1/messages`;
+  const response = await fetch(apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: comboName,
+      messages: [
+        { role: 'user', content: promptString },
+      ],
+      max_tokens: 4096,
+      temperature: 0.8,
+      stream: false,
+    }),
+  });
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -96,7 +97,7 @@ export async function callRouter9(options: RouterCallOptions): Promise<RouterRes
     throw new Error(`9router returned invalid JSON (HTML/Text). First 100 chars: ${responseText.substring(0, 100)}`);
   }
 
-  let content = data.choices?.[0]?.message?.content;
+  let content = data.content?.[0]?.text || data.choices?.[0]?.message?.content;
   if (!content) {
     throw new Error('Empty response from 9router API');
   }

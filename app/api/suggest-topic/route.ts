@@ -11,26 +11,23 @@ export async function POST(req: NextRequest) {
       throw new Error('9router configuration missing.');
     }
 
-    const response = await fetch(`${baseUrl}/v1/chat/completions`, {
+    const apiUrl = baseUrl.endsWith('/v1') ? `${baseUrl}/messages` : `${baseUrl}/v1/messages`;
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'dakwah-tier',
+        model: 'genfity/claude-sonnet-4.6',
+        system: 'Kamu adalah asisten pembuat ide konten Islami.',
         messages: [
           {
-            role: 'system',
-            content: 'Kamu adalah asisten pembuat ide konten Islami.',
-          },
-          {
             role: 'user',
-            content: `Berikan SATU ide topik spesifik yang menarik untuk tema ${theme}, dengan menyesuaikan gaya bahasa ${language} dan tone/nada penyampaian yang ${tone}. 
-Jangan gunakan format nomor, bullet, atau penjelasan tambahan. Cukup berikan langsung kalimat topiknya dalam 1 kalimat singkat. Jangan gunakan suggest yg sama`,
+            content: `Berikan SATU ide topik spesifik yang menarik untuk tema ${theme}, dengan menyesuaikan gaya bahasa ${language} dan tone/nada penyampaian yang ${tone}. \nJangan gunakan format nomor, bullet, atau penjelasan tambahan. Cukup berikan langsung kalimat topiknya dalam 1 kalimat singkat. Jangan gunakan suggest yg sama`,
           },
         ],
-        max_tokens: 15000,
+        max_tokens: 1024,
         temperature: 0.9,
         stream: false,
       }),
@@ -49,7 +46,7 @@ Jangan gunakan format nomor, bullet, atau penjelasan tambahan. Cukup berikan lan
       throw new Error(`9router returned invalid JSON (Stream/Text). First 100 chars: ${responseText.substring(0, 100)}`);
     }
 
-    const topic = data.choices?.[0]?.message?.content?.trim() || '';
+    const topic = data.content?.[0]?.text?.trim() || data.choices?.[0]?.message?.content?.trim() || '';
 
     return NextResponse.json({ topic });
   } catch (err) {
