@@ -8,9 +8,9 @@ export async function POST(req: NextRequest) {
     const body = (await req.json()) as GenerateRequest;
 
     // Validate required fields
-    if (!body.platform || !body.theme || !body.language || !body.tone || !body.topic) {
+    if (!body.theme || !body.language || !body.tone || !body.topic) {
       return NextResponse.json(
-        { error: 'Missing required fields: platform, theme, language, tone, topic' },
+        { error: 'Missing required fields: theme, language, tone, topic' },
         { status: 400 }
       );
     }

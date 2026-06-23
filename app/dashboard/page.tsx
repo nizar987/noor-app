@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Navbar from '@/components/navbar';
 import CreationSuite from '@/components/creation-suite';
-import RecentCreations from '@/components/recent-creations';
+
 
 export const metadata: Metadata = {
   title: 'Dashboard - Noor AI',
@@ -22,19 +22,6 @@ export default function DashboardPage() {
         {/* Sidebar — right 4 cols */}
         <aside className="lg:col-span-4 flex flex-col gap-stack-md">
 
-          {/* Recent Creations card */}
-          <div
-            className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-stack-md"
-            style={{ boxShadow: '0 4px 20px rgba(6,78,59,0.03)' }}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="font-headline-md text-headline-md text-primary">Recent Creations</h2>
-              <a href="/history" className="text-secondary font-label-sm text-label-sm hover:underline">
-                View All
-              </a>
-            </div>
-            <RecentCreations limit={3} />
-          </div>
 
           {/* Pro Tip card */}
           <div className="bg-primary-fixed-dim/20 rounded-xl border border-primary/20 p-stack-md flex flex-col items-center text-center relative overflow-hidden">

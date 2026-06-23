@@ -2,21 +2,26 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Platform, ContentTheme, Language, Tone, GenerateRequest } from '@/types';
-import PlatformSelector from './platform-selector';
+import { ContentTheme, Language, Tone, GenerateRequest, ContentType } from '@/types';
 import ContentPreview from './content-preview';
 import CustomSelect from './custom-select';
 import { useGenerate } from '@/hooks/use-generate';
 
 /* ─── Static data ─────────────────────────────────────────────── */
 
+const CONTENT_TYPES: { value: ContentType; label: string; icon: string }[] = [
+  { value: 'generate', label: 'Create New', icon: 'edit' },
+  { value: 'refined', label: 'Refine Existing', icon: 'auto_fix_high' },
+];
+
 const THEMES: { value: ContentTheme; label: string }[] = [
   { value: 'dawah',    label: "Da'wah"             },
-  { value: 'motivasi', label: 'Motivational'        },
-  { value: 'sirah',    label: 'History'             },
+  { value: 'tauhid',   label: 'Tauhid'             },
+  { value: 'tafsir',   label: 'Tafsir'             },
+  { value: 'hadith',   label: 'Hadith'             },
   { value: 'fiqh',     label: 'Fiqh'               },
-  { value: 'tafsir',   label: 'Quranic Reflection'  },
-  { value: 'hadith',   label: 'Hadith'              },
+  { value: 'sirah',    label: 'Sirah'              },
+  { value: 'motivasi', label: 'Motivasi'           },
 ];
 
 const LANGUAGES: { value: Language; label: string }[] = [
@@ -37,7 +42,7 @@ const TONES: { value: Tone; label: string }[] = [
 /* ─── Component ──────────────────────────────────────────────── */
 
 export default function CreationSuite() {
-  const [platform,               setPlatform]               = useState<Platform>('instagram');
+  const [contentType,            setContentType]            = useState<ContentType>('generate');
   const [theme,                  setTheme]                  = useState<ContentTheme>('dawah');
   const [language,               setLanguage]               = useState<Language>('indonesia');
   const [tone,                   setTone]                   = useState<Tone>('inspiring');
@@ -49,7 +54,7 @@ export default function CreationSuite() {
   const { generate, isLoading, error, reset } = useGenerate();
 
   const buildRequest = (): GenerateRequest => ({
-    platform,
+    contentType,
     theme,
     language,
     tone,
@@ -59,17 +64,17 @@ export default function CreationSuite() {
 
   const handleGenerate = async () => { 
     if (topic.trim()) {
-      const entry = await generate(buildRequest());
-      if (entry) {
-        router.push(`/preview?id=${entry.id}`);
+      const success = await generate(buildRequest());
+      if (success) {
+        router.push(`/preview`);
       }
     } 
   };
   const handleRegenerate = async () => { 
     if (topic.trim()) {
-      const entry = await generate(buildRequest());
-      if (entry) {
-        router.push(`/preview?id=${entry.id}`);
+      const success = await generate(buildRequest());
+      if (success) {
+        router.push(`/preview`);
       }
     }
   };
@@ -80,7 +85,7 @@ export default function CreationSuite() {
       const res = await fetch('/api/suggest-topic', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ theme, platform }),
+        body: JSON.stringify({ theme, language, tone }),
       });
       const data = await res.json();
       if (data.topic) setTopic(data.topic);
@@ -105,8 +110,31 @@ export default function CreationSuite() {
         </p>
       </div>
 
-      {/* Platform */}
-      <PlatformSelector value={platform} onChange={setPlatform} />
+
+      {/* Content Type */}
+      <div className="flex flex-col gap-2">
+        <label className="font-label-md text-label-md text-on-surface">Content Type</label>
+        <div className="flex flex-wrap gap-2">
+          {CONTENT_TYPES.map((t) => {
+            const isActive = contentType === t.value;
+            return (
+              <button
+                key={t.value}
+                type="button"
+                onClick={() => setContentType(t.value)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full font-label-md text-label-md cursor-pointer transition-colors border
+                  ${isActive
+                    ? 'bg-primary/10 border-primary text-primary'
+                    : 'bg-surface-container border-outline-variant/50 text-on-surface-variant hover:border-primary/50'
+                  }`}
+              >
+                <span className="material-symbols-outlined text-[18px]">{t.icon}</span>
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Theme & Language */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-stack-sm">
@@ -164,30 +192,43 @@ export default function CreationSuite() {
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <label htmlFor="input-topic" className="font-label-md text-label-md text-on-surface">
-            Specific Topic
+            {contentType === 'generate' ? 'Specific Topic' : 'Text to Refine'}
           </label>
-          <button
-            type="button"
-            onClick={handleSuggestTopic}
-            disabled={isGeneratingTopic}
-            className="flex items-center gap-1 font-label-sm text-label-sm text-secondary hover:text-secondary-container transition-colors disabled:opacity-50"
-          >
-            {isGeneratingTopic ? (
-              <span className="w-3 h-3 border-2 border-secondary/30 border-t-secondary rounded-full animate-spin" />
-            ) : (
-              <span className="material-symbols-outlined text-[14px]">lightbulb</span>
-            )}
-            Generate Idea ✨
-          </button>
+          {contentType === 'generate' && (
+            <button
+              type="button"
+              onClick={handleSuggestTopic}
+              disabled={isGeneratingTopic}
+              className="flex items-center gap-1 font-label-sm text-label-sm text-secondary hover:text-secondary-container transition-colors disabled:opacity-50"
+            >
+              {isGeneratingTopic ? (
+                <span className="w-3 h-3 border-2 border-secondary/30 border-t-secondary rounded-full animate-spin" />
+              ) : (
+                <span className="material-symbols-outlined text-[14px]">lightbulb</span>
+              )}
+              Generate Idea ✨
+            </button>
+          )}
         </div>
-        <input
-          id="input-topic"
-          type="text"
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-          placeholder="e.g., Keutamaan Sabar dalam menghadapi cobaan..."
-          className="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
-        />
+        {contentType === 'generate' ? (
+          <input
+            id="input-topic"
+            type="text"
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder="e.g., Keutamaan Sabar dalam menghadapi cobaan..."
+            className="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow"
+          />
+        ) : (
+          <textarea
+            id="input-topic"
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder="Paste your existing text or notes here..."
+            rows={6}
+            className="w-full bg-surface-container-low border border-outline-variant/50 rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow resize-y"
+          />
+        )}
       </div>
 
       {/* Additional instructions */}

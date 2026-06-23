@@ -9,22 +9,10 @@ interface ContentPreviewProps {
   onReset?: () => void;
 }
 
-const PLATFORM_LABELS: Record<string, string> = {
-  instagram: 'Instagram',
-  tiktok: 'TikTok',
-  facebook: 'Facebook',
-  twitter: 'Twitter',
-};
-
-const PLATFORM_ICONS: Record<string, string> = {
-  instagram: 'camera_alt',
-  tiktok: 'video_library',
-  facebook: 'thumb_up',
-  twitter: 'chat',
-};
 
 const THEME_LABELS: Record<string, string> = {
   dawah: "Da'wah",
+  tauhid: 'Tauhid',
   tafsir: 'Quranic Reflection',
   hadith: 'Hadith',
   fiqh: 'Fiqh',
@@ -65,10 +53,7 @@ export default function ContentPreview({ result, onRegenerate, onReset }: Conten
 
       {/* Meta badges */}
       <div className="flex items-center gap-2 flex-wrap">
-        <span className="flex items-center gap-1 px-3 py-1 rounded-full bg-primary/5 border border-primary/20 text-primary font-label-sm text-label-sm">
-          <span className="material-symbols-outlined text-[14px]">{PLATFORM_ICONS[result.platform]}</span>
-          {PLATFORM_LABELS[result.platform]}
-        </span>
+
         <span className="px-3 py-1 rounded-full bg-surface-container border border-outline-variant/50 text-on-surface-variant font-label-sm text-label-sm">
           {THEME_LABELS[result.theme]}
         </span>
@@ -90,10 +75,17 @@ export default function ContentPreview({ result, onRegenerate, onReset }: Conten
         {renderFormattedText(processedContent)}
       </div>
 
-      {/* Topic & model info */}
-      <p className="text-[12px] text-outline">
-        Topic: <span className="text-on-surface-variant">{result.topic}</span>
-      </p>
+      {/* Topic & Instructions info */}
+      <div className="flex flex-col gap-1">
+        <p className="text-[12px] text-outline">
+          Topic: <span className="text-on-surface-variant">{result.topic}</span>
+        </p>
+        {result.additionalInstructions && (
+          <p className="text-[12px] text-outline">
+            Instructions: <span className="text-on-surface-variant">{result.additionalInstructions}</span>
+          </p>
+        )}
+      </div>
 
       {/* Actions */}
       <div className="flex items-center gap-3 flex-wrap">

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    const { theme, platform } = await req.json();
+    const { theme, language, tone } = await req.json();
 
     const baseUrl = process.env.NOOR_9ROUTER_BASE_URL;
     const apiKey = process.env.NOOR_9ROUTER_API_KEY;
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
           },
           {
             role: 'user',
-            content: `Berikan SATU ide topik spesifik yang menarik untuk tema ${theme}. 
+            content: `Berikan SATU ide topik spesifik yang menarik untuk tema ${theme}, dengan menyesuaikan gaya bahasa ${language} dan tone/nada penyampaian yang ${tone}. 
 Jangan gunakan format nomor, bullet, atau penjelasan tambahan. Cukup berikan langsung kalimat topiknya dalam 1 kalimat singkat. Jangan gunakan suggest yg sama`,
           },
         ],

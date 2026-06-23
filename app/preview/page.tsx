@@ -1,35 +1,26 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Navbar from '@/components/navbar';
 import ContentPreview from '@/components/content-preview';
-import { getHistory } from '@/lib/history';
-import { HistoryEntry } from '@/types';
+import { getCurrentPreview } from '@/lib/storage';
+import { GenerateResult } from '@/types';
 import Link from 'next/link';
 
 function PreviewContent() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const id = searchParams.get('id');
-  const [entry, setEntry] = useState<HistoryEntry | null>(null);
+  const [entry, setEntry] = useState<GenerateResult | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const history = getHistory();
-    if (history.length === 0) {
-      setIsLoading(false);
-      return;
-    }
-
-    if (id) {
-      const found = history.find(e => e.id === id);
-      if (found) setEntry(found);
-    } else {
-      setEntry(history[0]);
+    // Only runs on the client
+    const preview = getCurrentPreview();
+    if (preview) {
+      setEntry(preview);
     }
     setIsLoading(false);
-  }, [id]);
+  }, []);
 
   return (
     <div className="flex-grow max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-stack-lg flex flex-col gap-stack-md">

@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { GenerateRequest, GenerateResult, HistoryEntry } from '@/types';
-import { saveToHistory } from '@/lib/history';
+import { GenerateRequest, GenerateResult } from '@/types';
+import { saveCurrentPreview, pingUserActive } from '@/lib/storage';
 
 interface UseGenerateReturn {
-  generate: (request: GenerateRequest) => Promise<HistoryEntry | undefined>;
+  generate: (request: GenerateRequest) => Promise<boolean>;
   result: GenerateResult | null;
   isLoading: boolean;
   error: string | null;
@@ -17,7 +17,7 @@ export function useGenerate(): UseGenerateReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const generate = useCallback(async (request: GenerateRequest): Promise<HistoryEntry | undefined> => {
+  const generate = useCallback(async (request: GenerateRequest): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     setResult(null);
@@ -43,7 +43,6 @@ export function useGenerate(): UseGenerateReturn {
       const data = await response.json();
       const generateResult: GenerateResult = {
         content: data.content,
-        platform: request.platform,
         theme: request.theme,
         language: request.language,
         tone: request.tone,
@@ -54,9 +53,13 @@ export function useGenerate(): UseGenerateReturn {
       };
 
       setResult(generateResult);
-      return saveToHistory(generateResult);
+      saveCurrentPreview(generateResult);
+      pingUserActive();
+      
+      return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Terjadi kesalahan tidak diketahui');
+      return false;
     } finally {
       setIsLoading(false);
     }

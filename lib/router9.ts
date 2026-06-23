@@ -13,8 +13,8 @@ interface RouterResponse {
 }
 
 interface ContentOptions {
+  contentType?: 'generate' | 'refined';
   language: string;
-  platform: string;
   theme: string;
   tone: string;
   topic: string;
@@ -27,7 +27,6 @@ function buildSystemPrompt(options: ContentOptions): string {
     `You are a content creation assistant.`,
     `## Output Requirements`,
     `- Language: ${options.language.trim()}`,
-    `- Platform: ${options.platform.trim()}`,
     `- Tone: ${options.tone.trim()}`,
     `- Theme: ${options.theme.trim()}`,
     `STRICT FORMATTING RULES:`,
@@ -35,7 +34,9 @@ function buildSystemPrompt(options: ContentOptions): string {
     `- Do NOT include titles like "# Konten Facebook" or "Here is your post:".`,
     `- Do NOT include horizontal dividers (---).`,
     `- Start directly with the first word of the caption/post.`,
-    `## Topic`,
+    options.contentType === 'refined'
+      ? `## Draft to Refine\nPlease refine and improve the following text/draft into a high-quality Islamic social media post:`
+      : `## Topic`,
     options.topic.trim(),
     `## Islamic References`,
     `Where relevant, enrich the content with:`,

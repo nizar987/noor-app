@@ -1,36 +1,7 @@
-import { Platform, Language, Tone, ContentTheme } from '@/types';
-
-// ===== Platform-specific format instructions =====
-function getPlatformFormat(platform: Platform): string {
-  const formats: Record<Platform, string> = {
-    instagram: `Format output sebagai:
-- Caption menarik (max 2200 karakter)
-- Maksimal 10 hashtag relevan di akhir
-- Gunakan emoji yang tepat dan tidak berlebihan
-- Mulai dengan hook yang kuat`,
-    tiktok: `Format output sebagai script video:
-- Hook opening yang kuat (3-5 detik pertama)
-- Konten utama (60-90 detik total)
-- Call to action di akhir
-- Tandai dengan [HOOK], [KONTEN], [CTA]`,
-    facebook: `Format output sebagai:
-- Post panjang yang informatif
-- Struktur: Pembuka → Isi → Penutup → CTA
-- Bisa include pertanyaan untuk engagement
-- Tidak ada batasan karakter ketat`,
-    twitter: `Format output sebagai thread Twitter:
-- Tweet 1: Hook/teaser (max 280 karakter)
-- Tweet 2-4: Isi konten (max 280 karakter per tweet)
-- Tweet terakhir: CTA atau penutup
-- Tandai setiap tweet dengan "1/" "2/" dst`,
-  };
-  return formats[platform];
-}
+import { Language, Tone, ContentTheme, ContentType } from '@/types';
 
 // ===== System Prompt Builder =====
-export function buildSystemPrompt(platform: Platform, language: Language): string {
-  const platformFormat = getPlatformFormat(platform);
-
+export function buildSystemPrompt(language: Language): string {
   const langInstructions: Record<Language, string> = {
     indonesia: 'Gunakan Bahasa Indonesia yang baik, mengalir, dan mudah dipahami masyarakat umum.',
     english: 'Use clear, eloquent English appropriate for a global Muslim audience.',
@@ -38,12 +9,15 @@ export function buildSystemPrompt(platform: Platform, language: Language): strin
     indonesia_sunda: 'Gunakan Bahasa Indonesia dengan bumbu sunda yang baik, mengalir, dan mudah dipahami masyarakat umum atau orang sunda.',
   };
 
-  return `Kamu adalah asisten spesialis pembuatan konten dakwah Islam untuk platform ${platform}.
+  return `Kamu adalah asisten spesialis pembuatan konten dakwah Islam untuk media sosial.
 
 BAHASA: ${langInstructions[language]}
 
-FORMAT PLATFORM:
-${platformFormat}
+FORMAT KONTEN:
+- Buat konten yang menarik dan cocok untuk diposting di media sosial secara umum
+- Gunakan paragraf yang mudah dibaca (tidak terlalu panjang)
+- Tambahkan hashtag yang relevan di bagian akhir
+- Sertakan Call-to-Action (CTA) yang sesuai di penutup
 
 PANDUAN KONTEN ISLAM:
 - Pastikan semua referensi Al-Quran menyebutkan surah dan ayat dengan benar
@@ -58,12 +32,12 @@ PANDUAN KONTEN ISLAM:
 - Jangan menambahkan kata kata yang tidak perlu atau tidak sesuai dengan topik
 - gunakan reference yang terpercaya, seperti website nu.or.id, https://ilmiyyah.com/halaqah-silsilah-ilmiyah
 
-
 PENTING: Jika ada ketidakpastian tentang referensi hadits, lebih baik tidak menyebutkannya daripada menyebut hadits palsu.`;
 }
 
 // ===== User Prompt Builder =====
 export function buildUserPrompt(
+  contentType: ContentType | undefined,
   theme: ContentTheme,
   tone: Tone,
   topic: string,
@@ -71,6 +45,7 @@ export function buildUserPrompt(
 ): string {
   const themeLabels: Record<ContentTheme, string> = {
     dawah: "Da'wah & Seruan Islam",
+    tauhid: "Tauhid & Akidah",
     tafsir: 'Tafsir Al-Quran',
     hadith: 'Hadits & Sunnah',
     fiqh: 'Fiqh & Hukum Islam',
@@ -86,7 +61,14 @@ export function buildUserPrompt(
     poetic: 'puitis, indah, menggunakan kiasan dan bahasa sastra',
   };
 
-  let prompt = `Buat konten Islam dengan tema: ${themeLabels[theme]}
+  let prompt = contentType === 'refined'
+    ? `Tolong perbaiki dan sempurnakan (refine) draf / catatan berikut menjadi konten media sosial Islam yang rapi, mengalir, dan siap posting dengan tema: ${themeLabels[theme]}
+    
+TEKS/DRAF ASLI:
+${topic}
+
+TONE YANG DIINGINKAN: ${toneDescriptions[tone]}`
+    : `Buat konten Islam dengan tema: ${themeLabels[theme]}
 
 TOPIK SPESIFIK: ${topic}
 
@@ -96,7 +78,7 @@ TONE YANG DIINGINKAN: ${toneDescriptions[tone]}`;
     prompt += `\n\nINSTRUKSI TAMBAHAN: ${additionalInstructions}`;
   }
 
-  prompt += '\n\nBuat konten yang berkualitas tinggi sesuai format platform yang ditentukan.';
+  prompt += '\n\nBuat konten media sosial yang berkualitas tinggi dan siap diposting.';
 
   return prompt;
 }

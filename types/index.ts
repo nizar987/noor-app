@@ -1,9 +1,10 @@
-// ===== Platform Types =====
-export type Platform = 'instagram' | 'tiktok' | 'facebook' | 'twitter';
+// ===== Content Types =====
+export type ContentType = 'generate' | 'refined';
 
 // ===== Theme Types =====
 export type ContentTheme = 
   | 'dawah'
+  | 'tauhid'
   | 'tafsir'
   | 'hadith'
   | 'fiqh'
@@ -18,7 +19,7 @@ export type Tone = 'inspiring' | 'academic' | 'friendly' | 'urgent' | 'poetic';
 
 // ===== Generation Request =====
 export interface GenerateRequest {
-  platform: Platform;
+  contentType?: ContentType;
   theme: ContentTheme;
   language: Language;
   tone: Tone;
@@ -29,7 +30,7 @@ export interface GenerateRequest {
 // ===== Generation Result =====
 export interface GenerateResult {
   content: string;
-  platform: Platform;
+  contentType?: ContentType;
   theme: ContentTheme;
   language: Language;
   tone: Tone;
@@ -39,20 +40,7 @@ export interface GenerateResult {
   createdAt: string;
 }
 
-// ===== History Entry =====
-export interface HistoryEntry extends GenerateResult {
-  id: string;
-}
 
-// ===== Platform Meta =====
-export interface PlatformMeta {
-  id: Platform;
-  label: string;
-  icon: string;
-  description: string;
-  maxChars?: number;
-  color: string;
-}
 
 // ===== Theme Meta =====
 export interface ThemeMeta {

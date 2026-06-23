@@ -6,7 +6,6 @@ import { usePathname, useRouter } from 'next/navigation';
 const NAV_LINKS = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/preview',   label: 'Preview'   },
-  { href: '/history',   label: 'History'   },
   { href: '/settings',  label: 'Settings'  },
 ];
 
